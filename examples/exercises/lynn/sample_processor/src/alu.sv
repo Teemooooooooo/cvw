@@ -16,7 +16,7 @@ module alu(
 
     // Always-add path for addresses/targets
     assign AddSum = SrcA + SrcB;
-    assign IEUAdr = (Op == 7'b1100111) ? {AddSum[31:1], 1'b0} : AddSum;
+    assign IEUAdr = AddSum;
 
     // Add/sub path for ALUResult when needed
     assign CondInvb = Sub ? ~SrcB : SrcB;

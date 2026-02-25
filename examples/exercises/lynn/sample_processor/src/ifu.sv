@@ -30,5 +30,5 @@ module ifu(
 
     adder pcadd4(PC, 32'd4, PCPlus4);
 
-    mux2 #(32) pcmux(PCPlus4, IEUAdr, PCSrc, PCNext);
+    mux2 #(32) pcmux(PCPlus4, {IEUAdr[31:1], 1'b0}, PCSrc, PCNext);
 endmodule
