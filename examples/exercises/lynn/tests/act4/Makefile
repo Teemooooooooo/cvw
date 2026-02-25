@@ -18,7 +18,7 @@ $(STAMP): Makefile
 		EXTENSIONS=I,Zicntr,Zihpm,Zicsr,Zmmul \
 		DEBUG=True \
 		--jobs $$(nproc)
-	@cp -r $(RISCV_ARCH_TEST)/work/sail-RVI20U32/elfs/rv32i/I/* $(WORK_DIR)/
+	@cp -r -L $(RISCV_ARCH_TEST)/work/common/fff067d2/elfs/rv32i/I/* $(WORK_DIR)/
 	@touch $(STAMP)
 
 .PHONY: list-elfs

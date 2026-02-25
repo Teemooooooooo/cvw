@@ -59,17 +59,18 @@ module testbench;
 
     if (~reset) begin
 
-      //$display("PC: %h \t Instr: %h", PC, Instr);
+      $display("PC: %h \t Instr: %h", PC, Instr);
 
       // $display("MemEn: %b",
       //         MemEn
       //         );
-
+      //  $display("x28: %h", dut.ieu.dp.rf.rf[28]);
       // $display("DataAdr: %h, t0: %h",
       //         DataAdr,
       //         dut.ieu.dp.rf.rf[5]
       //         );
-
+      //$display("ALUResult: %h, Result: %h", dut.ieu.dp.ALUResult, dut.ieu.dp.Result);
+      //$display("ALUFunct: %b", dut.ieu.dp.alu.ALUFunct);
       // terminate program as it exited program space
       if (Instr === 'x) begin
         $display("Instruction data x (PC: %h)", PC);

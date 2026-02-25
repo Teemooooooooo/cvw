@@ -2,6 +2,8 @@
 // RISC-V single-cycle processor
 // David_Harris@hmc.edu 2020
 
+//controller + datapath
+
 `include "parameters.svh"
 
 module ieu(
@@ -15,11 +17,13 @@ module ieu(
         output  logic           MemEn
     );
 
-    logic RegWrite, Jump, Eq, ALUResultSrc, ResultSrc;
-    logic [1:0] ALUSrc, ImmSrc;
+    logic RegWrite, Jump, Eq, ALUResultSrc, Lt;
+    logic [1:0] ResultSrc;
+    logic [1:0] ALUSrc;
+    logic [2:0] ImmSrc;
     logic [1:0] ALUControl;
 
-    controller c(.Op(Instr[6:0]), .Funct3(Instr[14:12]), .Funct7b5(Instr[30]), .Eq,
+    controller c(.IEUAdr(IEUAdr[1:0]), .Op(Instr[6:0]), .Funct3(Instr[14:12]), .Funct7b5(Instr[30]), .Eq, .Lt,
         .ALUResultSrc, .ResultSrc, .WriteByteEn, .PCSrc,
         .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .MemEn
     `ifdef DEBUG
@@ -27,7 +31,8 @@ module ieu(
     `endif
     );
 
+
     datapath dp(.clk, .reset, .Funct3(Instr[14:12]),
-        .ALUResultSrc, .ResultSrc, .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .Eq,
+        .ALUResultSrc, .ResultSrc, .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .Eq, .Lt,
         .PC, .PCPlus4, .Instr, .IEUAdr, .WriteData, .ReadData);
 endmodule

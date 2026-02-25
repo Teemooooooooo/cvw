@@ -3,6 +3,7 @@
 // David_Harris@hmc.edu 2020
 
 module regfile(
+        input   logic           reset,
         input   logic           clk,
         input   logic           WE3,
         input   logic [4:0]     A1, A2, A3,
@@ -17,7 +18,13 @@ module regfile(
     // write third port on rising edge of clock (A3/WD3/WE3)
     // register 0 hardwired to 0
     always_ff @(posedge clk)
-        if (WE3) rf[A3] <= WD3;
+        begin
+            if (reset)
+            for (int i = 1; i < 32; i++)
+                rf[i] <= 32'b0;
+            else if (WE3)
+                rf[A3] <= WD3;
+        end
 
     assign RD1 = (A1 != 0) ? rf[A1] : 0;
     assign RD2 = (A2 != 0) ? rf[A2] : 0;

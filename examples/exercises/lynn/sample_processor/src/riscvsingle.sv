@@ -22,7 +22,7 @@ module riscvsingle (
 
     logic [31:0] PCPlus4;
     logic PCSrc;
-    logic Load;
+    //logic Load;
 
     ifu ifu(.clk, .reset, .PCSrc, .IEUAdr, .PC, .PCPlus4);
     ieu ieu(.clk, .reset, .Instr, .PC, .PCPlus4, .PCSrc, .WriteByteEn,
