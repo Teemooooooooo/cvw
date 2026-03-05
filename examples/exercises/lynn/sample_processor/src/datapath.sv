@@ -15,7 +15,8 @@ module datapath(
         input   logic [31:0]    PC, PCPlus4,
         input   logic [31:0]    Instr,
         output  logic [31:0]    IEUAdr, WriteData,
-        input   logic [31:0]    ReadData
+        input   logic [31:0]    ReadData,
+        input   logic [31:0]    CSRout
     );
 
     logic [31:0] ImmExt;
@@ -37,7 +38,7 @@ module datapath(
     alu alu(.SrcA, .SrcB, .ALUControl, .Op(Instr[6:0]), .Funct3, .ALUResult, .IEUAdr, .Funct7(Instr[31:25]));
 
     mux2 #(32) ieuresultmux(ALUResult, PCPlus4, ALUResultSrc, IEUResult);
-    mux3 #(32) resultmux(IEUResult, ImmLoad, ImmExt, ResultSrc, Result);
+    mux4 #(32) resultmux(IEUResult, ImmLoad, ImmExt, CSRout, ResultSrc, Result);
 
     ext2 ext2(Funct3, IEUAdr[2:0], ReadData, ImmLoad);
     //assign WriteData = R2;

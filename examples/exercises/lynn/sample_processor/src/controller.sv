@@ -18,7 +18,8 @@ module controller(
         output  logic [1:0]   ALUSrc,
         output  logic [2:0]   ImmSrc,
         output  logic [1:0]   ALUControl,
-        output  logic         MemEn
+        output  logic         MemEn,
+        output  logic         IsAdd, IsBranch, IsBranchTaken, IsJump, IsStore, IsLoad, IsLui, IsAuipc
     `ifdef DEBUG
         , input   logic [31:0]  insn_debug
     `endif
@@ -46,6 +47,7 @@ module controller(
             7'b1100111: controls = 14'b1_000_01_0_1_0_00_0_1_0; // jalr
             7'b0110111: controls = 14'b1_111_00_0_0_0_10_0_0_0; // lui
             7'b0010111: controls = 14'b1_111_11_0_0_0_00_0_0_0; // auipc
+            7'b1110011: controls = 14'b1_000_00_0_0_0_11_0_0_0; // CSR
             default: begin
                 `ifdef DEBUG
                     controls = 14'bx_xxx_xx_x_x_x_xx_x_x_x; // non-implemented instruction
@@ -81,6 +83,14 @@ module controller(
 
     assign PCSrc = Branch & Flag | Jump;
 
+    assign IsAdd = (!((Funct7b5) | (&Funct3))) & (Op == 7'b0110011);
+    assign IsBranch = Branch;
+    assign IsBranchTaken = Branch & Flag;
+    assign IsJump = Jump;
+    assign IsStore = (Op == 7'b0100011);
+    assign IsLoad = (Op == 7'b0000011);
+    assign IsLui = (Op == 7'b0110111);
+    assign IsAuipc = (Op == 7'b0010111);
     // MemWrite logic
     //assign WriteByteEn = {(4){MemWrite}}; // currently assigns all 4 bytes to MemWrite
 

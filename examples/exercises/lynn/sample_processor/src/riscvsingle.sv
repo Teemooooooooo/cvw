@@ -20,14 +20,15 @@ module riscvsingle (
         output  logic [3:0]     WriteByteEn  // strobes, 1 hot stating weather a byte should be written on a store
     );
 
-    logic [31:0] PCPlus4;
+    logic [31:0] PCPlus4, CSRout;
     logic PCSrc;
-    //logic Load;
+    logic IsAdd, IsBranch, IsBranchTaken, IsJump, IsStore, IsLoad, IsLui, IsAuipc;
 
     ifu ifu(.clk, .reset, .PCSrc, .IEUAdr, .PC, .PCPlus4);
     ieu ieu(.clk, .reset, .Instr, .PC, .PCPlus4, .PCSrc, .WriteByteEn,
-            .IEUAdr, .WriteData, .ReadData, .MemEn
+            .IEUAdr, .WriteData, .ReadData, .MemEn, .CSRout, .IsAdd, .IsBranch, .IsBranchTaken, .IsJump, .IsStore, .IsLoad, .IsLui, .IsAuipc
         );
 
+    CSR CSR(.clk, .reset, .CSRAddress(Instr[31:20]), .CSRout, .IsAdd, .IsBranch, .IsBranchTaken, .IsJump, .IsStore, .IsLoad, .IsLui, .IsAuipc);
     assign WriteEn = |WriteByteEn;
 endmodule

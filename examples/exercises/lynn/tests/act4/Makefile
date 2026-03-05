@@ -12,6 +12,10 @@ ELFS_DIR 		?= $(WORK_DIR)/lynn-rv32I/elfs/rv32i
 
 CONFIG_FILES 	?=
 
+ELFS_DIR 		?= $(WORK_DIR)/lynn-rv32I/elfs/rv32i
+
+CONFIG_FILES 	?=
+
 .PHONY: populate
 populate: $(STAMP)
 
@@ -20,14 +24,17 @@ $(STAMP): Makefile
 	@$(MAKE) -C $(RISCV_ARCH_TEST) \
 		CONFIG_FILES=$(CONFIG_FILES) \
 		WORKDIR=$(WORK_DIR) \
-		EXTENSIONS=I \
+		EXTENSIONS=I,Zicntr,Zihpm \
 		--jobs $$(nproc)
+	@rm -f $(ELFS_DIR)/Zicntr/*csrrc*
+	@rm -f $(ELFS_DIR)/Zihpm/*csrrc*
 	@rm -f $(ELFS_DIR)/Zicntr/*csrrc*
 	@rm -f $(ELFS_DIR)/Zihpm/*csrrc*
 	@touch $(STAMP)
 
 .PHONY: list-elfs
 list-elfs:
+	@find -L $(ELFS_DIR) -type f -name '*.elf' | sort
 	@find -L $(ELFS_DIR) -type f -name '*.elf' | sort
 
 .PHONY: clean

@@ -8,14 +8,16 @@
 
 module ieu(
         input   logic           clk, reset,
-        input   logic [31:0]    Instr,
+        input   logic [31:0]    Instr, CSRout,
         input   logic [31:0]    PC, PCPlus4,
         output  logic           PCSrc,
         output  logic [3:0]     WriteByteEn,
         output  logic [31:0]    IEUAdr, WriteData,
         input   logic [31:0]    ReadData,
-        output  logic           MemEn
+        output  logic           MemEn,
+        output  logic           IsAdd, IsBranch, IsBranchTaken, IsJump, IsStore, IsLoad, IsLui, IsAuipc
     );
+
 
     logic RegWrite, Jump, Eq, ALUResultSrc, Lt;
     logic [1:0] ResultSrc;
@@ -25,7 +27,7 @@ module ieu(
 
     controller c(.IEUAdr(IEUAdr[1:0]), .Op(Instr[6:0]), .Funct3(Instr[14:12]), .Funct7b5(Instr[30]), .Eq, .Lt,
         .ALUResultSrc, .ResultSrc, .WriteByteEn, .PCSrc,
-        .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .MemEn
+        .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .MemEn, .IsAdd, .IsBranch, .IsBranchTaken, .IsJump, .IsStore, .IsLoad, .IsLui, .IsAuipc
     `ifdef DEBUG
         , .insn_debug(Instr)
     `endif
@@ -34,5 +36,5 @@ module ieu(
 
     datapath dp(.clk, .reset, .Funct3(Instr[14:12]),
         .ALUResultSrc, .ResultSrc, .ALUSrc, .RegWrite, .ImmSrc, .ALUControl, .Eq, .Lt,
-        .PC, .PCPlus4, .Instr, .IEUAdr, .WriteData, .ReadData);
+        .PC, .PCPlus4, .Instr, .IEUAdr, .WriteData, .ReadData, .CSRout);
 endmodule
