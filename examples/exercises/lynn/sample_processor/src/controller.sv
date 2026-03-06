@@ -6,7 +6,7 @@
 
 module controller(
         input   logic [1:0]   IEUAdr,
-        input   logic [6:0]   Op,
+        input   logic [6:0]   Op, Funct7,
         input   logic         Lt, Eq,
         input   logic [2:0]   Funct3,
         input   logic         Funct7b5,
@@ -19,7 +19,8 @@ module controller(
         output  logic [2:0]   ImmSrc,
         output  logic [1:0]   ALUControl,
         output  logic         MemEn,
-        output  logic         IsAdd, IsBranch, IsBranchTaken, IsJump, IsStore, IsLoad, IsLui, IsAuipc
+        output  logic         IsAdd, IsBranch, IsBranchTaken, IsJump, IsStore, IsLoad, IsLui, IsAuipc,
+        output  logic         IsMul
     `ifdef DEBUG
         , input   logic [31:0]  insn_debug
     `endif
@@ -30,7 +31,6 @@ module controller(
     logic Sub, ALUOp;
     logic MemWrite;
     logic [13:0] controls;
-
 
 
 
@@ -65,10 +65,22 @@ module controller(
         ResultSrc, Branch, Jump, MemEn} = controls;
 
     // ALU Control Logic
-    assign Sub = ALUOp & ((Funct3 == 3'b000) & Funct7b5 & Op[5] | (Funct3 == 3'b010)); // subtract or SLT
-    //assign Sub = ALUOp & ((Funct3 == 3'b000) & Funct7b5 & Op[5]);
+    assign Sub = ALUOp &
+             ( (((Funct3 == 3'b000) & Funct7b5 & Op[5]))  // sub
+               | (Funct3 == 3'b010)                      // slt
+               | (Funct3 == 3'b011) );                   // sltu//assign Sub = ALUOp & ((Funct3 == 3'b000) & Funct7b5 & Op[5]);
     assign ALUControl = {Sub, ALUOp};
 
+    always_comb begin
+  IsMul = 1'b0;
+
+  // Only assert when opcode/funct7/funct3 are DEFINITELY matching
+  if (Op    === 7'b0110011 &&
+      Funct7=== 7'b0000001 &&
+      (Funct3 === 3'b000 || Funct3 === 3'b001 || Funct3 === 3'b010 || Funct3 === 3'b011)) begin
+    IsMul = 1'b1;
+  end
+end
     // PCSrc logic
 
     always_comb
