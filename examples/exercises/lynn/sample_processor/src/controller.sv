@@ -118,6 +118,7 @@ end
                 4'b00_01: WriteByteEn = 4'b0010;
                 4'b00_10: WriteByteEn = 4'b0100;
                 4'b00_11: WriteByteEn = 4'b1000;
+                default: WriteByteEn = 4'b0;
             endcase
         end
     end
