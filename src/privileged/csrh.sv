@@ -280,9 +280,11 @@ module csrh import cvw::*;  #(parameter cvw_t P) (
   assign WriteVSATPM = P.VIRTMEM_SUPPORTED & ValidVSWriteM & (CSRAdrM == VSATP) &
                        LegalVSatpModeM;
 
-  // Access to vstimecmp in V=1 is gated by mcounteren.TM, hcounteren.TM, and henvcfg.STCE.
-  // henvcfg.STCE is already constrained by menvcfg.STCE in the architectural HENVCFG view below.
-  assign AllowVSTimecmpAccessM = ~VirtModeW | (MCOUNTEREN_TM & HCOUNTEREN_REGW[1] & HENVCFG_REGW[63]);
+  // Access to vstimecmp in V=1 is gated by hcounteren.TM and henvcfg.STCE.
+  // Access to vstimecmp in general (when not in M mode) is gated by mcounteren.TM, menvcfg.STCE
+  // AllowVSTimecmpAccessM must be false for both when there is virtual instruction fault and illegal instruction fault
+  assign AllowVSTimecmpAccessM = (~VirtModeW | HCOUNTEREN_REGW[1] & HENVCFG_REGW[63]) // this evaluates to 1 when no virtual instruction fault
+                                  & ((MENVCFG_STCE & MCOUNTEREN_TM) | (PrivilegeModeW == P.M_MODE)); // evaluates to 1 when no illegal instruction fault
   assign WriteVSTIMECMPM  = P.SSTC_SUPPORTED & ValidVSWriteM & (CSRAdrM == VSTIMECMP) & AllowVSTimecmpAccessM;
   assign WriteVSTIMECMPHM = P.SSTC_SUPPORTED & (P.XLEN == 32) & (ValidVSWriteM & (CSRAdrM == VSTIMECMPH)) & AllowVSTimecmpAccessM;
 
