@@ -157,8 +157,9 @@ module csrhvirt import cvw::*;  #(parameter cvw_t P) (
   assign VirtualSCSRAccessM = VirtModeW & (PrivilegeModeW == P.U_MODE) & HSQualifiedSCSRAccessM;
   assign VirtualHCSRAccessM = VirtModeW & HSQualifiedHCSRAccessM;
   assign VirtualVSCSRAccessM = VirtModeW & HSQualifiedVSCSRAccessM; // Virtual modes accessing VS CSRs raise virtual exception
-  // whether accessing vstimecmp cause virtual-instruction exception
-  // must exclude cases that trigger illegal-instruction exception
+  // VS access to stimecmp (remapped to vstimecmp) raises a virtual-instruction exception
+  // when hcounteren.TM or henvcfg.STCE blocks it but mcounteren.TM & menvcfg.STCE allow it
+  // (norm:henvcfg-stce, norm:hcounteren_acc). If the M-level gates block it, it is illegal instead.
   assign VirtualVSTimecmpAccessM = VirtModeW & (PrivilegeModeW == P.S_MODE) & P.SSTC_SUPPORTED & // in VS mode
                                    ((CSRAdrM_In == STIMECMP) | ((P.XLEN == 32) & (CSRAdrM_In == STIMECMPH))) & // accessing vstimecmp
                                    ~(HCOUNTEREN_REGW[1] & HENVCFG_REGW[63]) &
